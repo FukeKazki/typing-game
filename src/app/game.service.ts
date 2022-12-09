@@ -34,12 +34,12 @@ export class GameService {
     })
   }
 
-  nextProblem(): void {
+  nextProblem(text: string): void {
     this.count.next(this.count.value + 1)
-    this.calcScore()
+    this.calcScore(text.length)
   }
 
-  private calcScore(): void {
-    this.score.next(this.score.value + 10)
+  private calcScore(textLength: number): void {
+    this.score.next(this.score.value + textLength * 1.2)
   }
 }

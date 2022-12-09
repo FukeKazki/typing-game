@@ -1,31 +1,42 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { GameService } from '../game.service';
-import { GameParser, hiraganaToRomas } from 'hiragana-parser'
+import { HiraganaParser, hiraganaToRomas } from 'hiragana-parser'
 import { interval, map, take } from 'rxjs';
+import data from '../data/problems.json'
+import { Subscription } from 'rxjs';
 
-const PROBLEMS = ['さいとうあすかです', 'おれのおんなになれ']
+const random = (max: number) => {
+  return Math.floor((Math.random() * max))
+}
 
 @Component({
   selector: 'app-playing',
   templateUrl: './playing.component.html',
   styleUrls: ['./playing.component.scss']
 })
-export class PlayingComponent implements OnInit {
+export class PlayingComponent implements OnInit, OnDestroy {
 
   count: number = 0
 
   score: number = 0
   // typingするひらがな
   typing: string = ''
+  kanji: string = ''
 
   collects: string[] = []
 
-  parser: GameParser | undefined
+  parser: HiraganaParser | undefined
 
   inputed: string = ''
   notInputed: string = ''
 
-  timer = 0
+  inputedHiragana: string = ''
+  notInputedHiragana: string = ''
+
+  subscription = new Subscription()
+
+  // 残り時間
+  timer = 30
 
   constructor(
     private readonly gameService: GameService
@@ -33,37 +44,56 @@ export class PlayingComponent implements OnInit {
 
   ngOnInit(): void {
     this.generate()
-    this.gameService.score.subscribe(score => {
-      this.score = score
-    })
-    this.gameService.count.subscribe(count => {
-      this.count = count
-    })
+    this.subscription.add(
+      this.gameService.score.subscribe(score => {
+        this.score = score
+      })
+    )
+    this.subscription.add(
+      this.gameService.count.subscribe(count => {
+        this.count = count
+      })
+    )
+    this.start()
+  }
+
+  ngOnDestroy(): void {
+      this.subscription.unsubscribe()
+  }
+
+  private start(): void {
     const start = 30
     const timer = interval(1000)
     timer.pipe(
       take(start),
-      map(v => start - v)
+      map(v => start - v - 1)
     ).subscribe(v => {
-      console.log(v)
       this.timer = v
+      if (v === 0) {
+        this.finished()
+      }
     })
   }
 
   private generate(): void {
-    const problem = PROBLEMS[this.count]
-    this.typing = problem
-    this.parser = new GameParser({ hiraganas: problem })
-    this.collects = hiraganaToRomas(problem)
+    const problem = data.problems[random(data.problems.length)]
+    this.typing = problem.hiragana
+    this.kanji = problem.kanji
+    this.parser = new HiraganaParser({ hiraganas: problem.hiragana })
+    this.collects = hiraganaToRomas(problem.hiragana)
     this.notInputed = this.parser.notInputedRoma
+    this.notInputedHiragana = this.parser.notInputedHiragana
   }
 
   @HostListener('window:keydown',['$event'])
-  onKeyUp(event: KeyboardEvent) {
+  private onKeyDown(event: KeyboardEvent) {
     const key = event.key
     this.parser?.input(key)
     this.inputed = this.parser?.inputedRoma ?? ''
     this.notInputed = this.parser?.notInputedRoma ?? ''
+
+    this.inputedHiragana = this.parser?.inputedHiragana ?? ''
+    this.notInputedHiragana = this.parser?.notInputedHiragana ?? ''
 
     if (this.parser?.isComplete()) {
       this.complete()
@@ -71,9 +101,11 @@ export class PlayingComponent implements OnInit {
   }
 
   private complete(): void {
-    this.gameService.nextProblem()
+    this.gameService.nextProblem(this.inputed)
     this.inputed = ''
     this.notInputed = ''
+    this.inputedHiragana = ''
+    this.notInputedHiragana = ''
     this.generate()
   }
 

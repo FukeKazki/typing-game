@@ -12,6 +12,8 @@ export class InitComponent {
   ) { }
 
   start() {
+    this.gameService.count.next(0)
+    this.gameService.score.next(0)
     this.gameService.state.next('PLAYING')
   }
 }
