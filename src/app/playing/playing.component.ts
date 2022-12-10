@@ -38,7 +38,8 @@ export class PlayingComponent implements OnInit {
    * ゲーム開始
    */
   private start(): void {
-    const { kanji, hiragana } = this.playingService.start()
+    this.playingService.start()
+    const { kanji, hiragana } = this.playingService.getProblem()
     this.kanji = kanji
     this.parser = new HiraganaParser({ hiraganas: hiragana })
     this.notInputed = this.parser.notInputedRoma
@@ -87,7 +88,8 @@ export class PlayingComponent implements OnInit {
    * 次の問題に行く
    */
   private complete(): void {
-    const { kanji, hiragana } = this.playingService.next()
+    this.playingService.next()
+    const { kanji, hiragana } = this.playingService.getProblem()
     this.kanji = kanji
     this.parser = new HiraganaParser({ hiraganas: hiragana })
     this.notInputed = this.parser.notInputedRoma

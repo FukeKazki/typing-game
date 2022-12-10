@@ -4,37 +4,43 @@ import { State } from '../store/manager.reducer';
 import { selectCount, selectScore } from '../store/manager.selector';
 import * as ManagerActions from '../store/manager.actions'
 import data from '../data/problems.json'
+import { shuffle } from '../util';
 
-const random = (max: number) => {
-  return Math.floor((Math.random() * max))
+export type Problem = {
+  kanji: string;
+  hiragana: string;
 }
-
 @Injectable({
   providedIn: 'root'
 })
 export class PlayingService {
+
+  problems: Problem[] = []
+  iterator = 0
+
   constructor(
     private readonly manager: Store<State>
-  ) { }
+  ) {}
 
   count$ = this.manager.pipe(select(selectCount))
   score$ = this.manager.pipe(select(selectScore))
 
   start() {
+    this.problems = shuffle(data.problems)
     this.manager.dispatch(ManagerActions.start())
-    return this.generate()
   }
 
   end() {
+    this.iterator = 0;
     this.manager.dispatch(ManagerActions.end())
   }
 
   next() {
+    this.iterator++;
     this.manager.dispatch(ManagerActions.next())
-    return this.generate()
   }
 
-  private generate() {
-    return data.problems[random(data.problems.length)]
+  getProblem() {
+    return this.problems[this.iterator]
   }
 }
