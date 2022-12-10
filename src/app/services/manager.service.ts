@@ -13,7 +13,7 @@ export type Problem = {
 @Injectable({
   providedIn: 'root'
 })
-export class PlayingService {
+export class ManagerService {
 
   problems: Problem[] = []
   iterator = 0
@@ -42,5 +42,9 @@ export class PlayingService {
 
   getProblem() {
     return this.problems[this.iterator]
+  }
+
+  getNextProblem() {
+    return this.problems[this.iterator + 1]
   }
 }

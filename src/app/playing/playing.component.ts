@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HiraganaParser } from 'hiragana-parser'
 import { interval, map, take } from 'rxjs';
-import { PlayingService } from './playing.service';
+import { ManagerService } from '../services/manager.service';
 
 @Component({
   selector: 'app-playing',
@@ -18,16 +18,20 @@ export class PlayingComponent implements OnInit {
   inputedHiragana: string = ''
   notInputedHiragana: string = ''
 
-  count$ = this.playingService.count$
-  score$ = this.playingService.score$
+  count$ = this.managerService.count$
+  score$ = this.managerService.score$
 
   // 残り時間
   timer = 40
 
   constructor(
-    private readonly playingService: PlayingService,
+    private readonly managerService: ManagerService,
     private readonly router: Router
   ) { }
+
+  get nextProblem() {
+    return this.managerService.getNextProblem()
+  }
 
 
   ngOnInit(): void {
@@ -38,8 +42,8 @@ export class PlayingComponent implements OnInit {
    * ゲーム開始
    */
   private start(): void {
-    this.playingService.start()
-    const { kanji, hiragana } = this.playingService.getProblem()
+    this.managerService.start()
+    const { kanji, hiragana } = this.managerService.getProblem()
     this.kanji = kanji
     this.parser = new HiraganaParser({ hiraganas: hiragana })
     this.notInputed = this.parser.notInputedRoma
@@ -88,8 +92,8 @@ export class PlayingComponent implements OnInit {
    * 次の問題に行く
    */
   private complete(): void {
-    this.playingService.next()
-    const { kanji, hiragana } = this.playingService.getProblem()
+    this.managerService.next()
+    const { kanji, hiragana } = this.managerService.getProblem()
     this.kanji = kanji
     this.parser = new HiraganaParser({ hiraganas: hiragana })
     this.notInputed = this.parser.notInputedRoma

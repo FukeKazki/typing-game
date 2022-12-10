@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ResultsService } from './results.service';
+import { ManagerService } from '../services/manager.service';
 
 @Component({
   selector: 'app-results',
@@ -8,11 +8,11 @@ import { ResultsService } from './results.service';
 })
 export class ResultsComponent implements OnInit {
   constructor(
-    private readonly resultsService: ResultsService
+    private readonly managerService: ManagerService
   ) { }
 
-  score$ = this.resultsService.score$
-  count$ = this.resultsService.count$
+  score$ = this.managerService.score$
+  count$ = this.managerService.count$
 
   ngOnInit() {
   }
