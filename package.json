@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --base-href 'https://FukeKazki.github.io/typing-game/'",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
