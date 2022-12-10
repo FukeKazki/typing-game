@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { GameService } from '../game.service';
 
 @Component({
   selector: 'app-init',
@@ -8,12 +7,8 @@ import { GameService } from '../game.service';
 })
 export class InitComponent {
   constructor(
-    private readonly gameService: GameService
   ) { }
 
   start() {
-    this.gameService.count.next(0)
-    this.gameService.score.next(0)
-    this.gameService.state.next('PLAYING')
   }
 }

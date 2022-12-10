@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { PlayingComponent } from './playing/playing.component';
 import { ResultsComponent } from './results/results.component';
 import { InitComponent } from './init/init.component';
+import { StoreModule } from '@ngrx/store';
+import { featureName, managerReducer } from './store/manager.reducer';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,8 @@ import { InitComponent } from './init/init.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    StoreModule.forRoot({ [featureName]: managerReducer }),
   ],
   providers: [],
   bootstrap: [AppComponent]

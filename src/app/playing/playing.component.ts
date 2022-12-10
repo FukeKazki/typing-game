@@ -1,67 +1,56 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { GameService } from '../game.service';
-import { HiraganaParser, hiraganaToRomas } from 'hiragana-parser'
+import { Component, HostListener, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { HiraganaParser } from 'hiragana-parser'
 import { interval, map, take } from 'rxjs';
-import data from '../data/problems.json'
-import { Subscription } from 'rxjs';
-
-const random = (max: number) => {
-  return Math.floor((Math.random() * max))
-}
+import { PlayingService } from './playing.service';
 
 @Component({
   selector: 'app-playing',
   templateUrl: './playing.component.html',
   styleUrls: ['./playing.component.scss']
 })
-export class PlayingComponent implements OnInit, OnDestroy {
-
-  count: number = 0
-
-  score: number = 0
-  // typingするひらがな
-  typing: string = ''
-  kanji: string = ''
-
-  collects: string[] = []
-
+export class PlayingComponent implements OnInit {
   parser: HiraganaParser | undefined
 
+  kanji: string = ''
   inputed: string = ''
   notInputed: string = ''
-
   inputedHiragana: string = ''
   notInputedHiragana: string = ''
 
-  subscription = new Subscription()
+  count$ = this.playingService.count$
+  score$ = this.playingService.score$
 
   // 残り時間
   timer = 30
 
   constructor(
-    private readonly gameService: GameService
-  ) {}
+    private readonly playingService: PlayingService,
+    private readonly router: Router
+  ) { }
+
 
   ngOnInit(): void {
-    this.generate()
-    this.subscription.add(
-      this.gameService.score.subscribe(score => {
-        this.score = score
-      })
-    )
-    this.subscription.add(
-      this.gameService.count.subscribe(count => {
-        this.count = count
-      })
-    )
     this.start()
   }
 
-  ngOnDestroy(): void {
-      this.subscription.unsubscribe()
+  /**
+   * ゲーム開始
+   */
+  private start(): void {
+    const { kanji, hiragana } = this.playingService.start()
+    this.kanji = kanji
+    this.parser = new HiraganaParser({ hiraganas: hiragana })
+    this.notInputed = this.parser.notInputedRoma
+    this.notInputedHiragana = this.parser.notInputedHiragana
+
+    this.startTimer()
   }
 
-  private start(): void {
+  /**
+   * タイマーを起動する
+   */
+  private startTimer(): void {
     const start = 30
     const timer = interval(1000)
     timer.pipe(
@@ -75,16 +64,9 @@ export class PlayingComponent implements OnInit, OnDestroy {
     })
   }
 
-  private generate(): void {
-    const problem = data.problems[random(data.problems.length)]
-    this.typing = problem.hiragana
-    this.kanji = problem.kanji
-    this.parser = new HiraganaParser({ hiraganas: problem.hiragana })
-    this.collects = hiraganaToRomas(problem.hiragana)
-    this.notInputed = this.parser.notInputedRoma
-    this.notInputedHiragana = this.parser.notInputedHiragana
-  }
-
+  /**
+   * キーを入力した時
+   */
   @HostListener('window:keydown',['$event'])
   private onKeyDown(event: KeyboardEvent) {
     const key = event.key
@@ -100,16 +82,25 @@ export class PlayingComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * 全て入力した時
+   * 次の問題に行く
+   */
   private complete(): void {
-    this.gameService.nextProblem(this.inputed)
+    const { kanji, hiragana } = this.playingService.next()
+    this.kanji = kanji
+    this.parser = new HiraganaParser({ hiraganas: hiragana })
+    this.notInputed = this.parser.notInputedRoma
+    this.notInputedHiragana = this.parser.notInputedHiragana
+
     this.inputed = ''
-    this.notInputed = ''
     this.inputedHiragana = ''
-    this.notInputedHiragana = ''
-    this.generate()
   }
 
+  /**
+   * タイマーが終了した時
+   */
   private finished(): void {
-    this.gameService.state.next('FINISHED')
+    this.router.navigateByUrl('/results', { replaceUrl: true })
   }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GameService } from '../game.service';
+import { ResultsService } from './results.service';
 
 @Component({
   selector: 'app-results',
@@ -8,19 +8,13 @@ import { GameService } from '../game.service';
 })
 export class ResultsComponent implements OnInit {
   constructor(
-    private readonly gameService: GameService
+    private readonly resultsService: ResultsService
   ) { }
 
-  score: number = 0
-  count: number = 0
+  score$ = this.resultsService.score$
+  count$ = this.resultsService.count$
 
   ngOnInit() {
-    this.gameService.score.subscribe(v => {
-      this.score = v
-    })
-    this.gameService.count.subscribe(v => {
-      this.count = v
-    })
   }
 
 }
