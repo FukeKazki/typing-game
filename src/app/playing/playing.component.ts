@@ -22,7 +22,7 @@ export class PlayingComponent implements OnInit {
   score$ = this.playingService.score$
 
   // 残り時間
-  timer = 30
+  timer = 40
 
   constructor(
     private readonly playingService: PlayingService,
@@ -51,7 +51,7 @@ export class PlayingComponent implements OnInit {
    * タイマーを起動する
    */
   private startTimer(): void {
-    const start = 30
+    const start = 40
     const timer = interval(1000)
     timer.pipe(
       take(start),
