@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HiraganaParser } from 'hiragana-parser'
 import { interval, map, take } from 'rxjs';
-import { ManagerService } from '../services/manager.service';
+import { ManagerService } from '../../services/manager.service';
 
 @Component({
   selector: 'app-playing',

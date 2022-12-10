@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ManagerService } from '../services/manager.service';
+import { ManagerService } from '../../services/manager.service';
 
 @Component({
   selector: 'app-results',
