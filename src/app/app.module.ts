@@ -38,7 +38,9 @@ const routes: Routes = [{
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes, {
+      useHash: true // ゲームだしSEOいらないのでHashモードでいい気がした
+    }),
     StoreModule.forRoot({ [featureName]: managerReducer }),
     EffectsModule.forRoot([ManagerEffects])
   ],
