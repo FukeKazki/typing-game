@@ -21,7 +21,7 @@ export class PlayingComponent implements OnInit {
   miss$ = this.managerService.miss$
 
   // 残り時間
-  timer = 100
+  timer = 40
 
   constructor(
     private readonly managerService: ManagerService,
@@ -55,7 +55,7 @@ export class PlayingComponent implements OnInit {
    * タイマーを起動する
    */
   private startTimer(): void {
-    const start = 100
+    const start = 40
     const timer = interval(1000)
     timer.pipe(
       take(start),
