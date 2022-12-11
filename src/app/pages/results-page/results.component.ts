@@ -13,6 +13,9 @@ export class ResultsComponent implements OnInit {
 
   score$ = this.managerService.score$
   count$ = this.managerService.count$
+  miss$ = this.managerService.miss$
+  success$ = this.managerService.success$
+  varidity$ = this.managerService.varidity$
 
   ngOnInit() {
   }

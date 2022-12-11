@@ -1,5 +1,7 @@
 <p>結果はっぴょー</p>
-
+<p>正答数: {{ success$ | async }}</p>
+<p>まちがえ: {{ miss$ | async }}</p>
+<p>正答率: {{ varidity$ | async }}%</p>
 <p>回答数: {{ count$ | async }}</p>
 <p>特典: {{ score$ | async }}</p>
 

@@ -20,9 +20,10 @@ export class PlayingComponent implements OnInit {
 
   count$ = this.managerService.count$
   score$ = this.managerService.score$
+  miss$ = this.managerService.miss$
 
   // 残り時間
-  timer = 40
+  timer = 10
 
   constructor(
     private readonly managerService: ManagerService,
@@ -56,7 +57,7 @@ export class PlayingComponent implements OnInit {
    * タイマーを起動する
    */
   private startTimer(): void {
-    const start = 40
+    const start = 10
     const timer = interval(1000)
     timer.pipe(
       take(start),
@@ -75,13 +76,19 @@ export class PlayingComponent implements OnInit {
   @HostListener('window:keydown',['$event'])
   private onKeyDown(event: KeyboardEvent) {
     const key = event.key
-    this.parser?.input(key)
+    const isOk = this.parser?.input(key)
     this.inputed = this.parser?.inputedRoma ?? ''
     this.notInputed = this.parser?.notInputedRoma ?? ''
 
     this.inputedHiragana = this.parser?.inputedHiragana ?? ''
     this.notInputedHiragana = this.parser?.notInputedHiragana ?? ''
 
+    if (isOk) {
+      this.managerService.success()
+    }
+    else {
+      this.managerService.miss()
+    }
     if (this.parser?.isComplete()) {
       this.complete()
     }
@@ -107,6 +114,7 @@ export class PlayingComponent implements OnInit {
    * タイマーが終了した時
    */
   private finished(): void {
+    this.managerService.end()
     this.router.navigateByUrl('/results', { replaceUrl: true })
   }
 }

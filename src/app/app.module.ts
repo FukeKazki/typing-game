@@ -8,6 +8,8 @@ import { InitComponent } from './pages/init-page/init.component';
 import { StoreModule } from '@ngrx/store';
 import { featureName, managerReducer } from './store/manager.reducer';
 import { RouterModule, Routes } from '@angular/router';
+import { EffectsModule } from '@ngrx/effects';
+import { ManagerEffects } from './store/manager.effect';
 
 const routes: Routes = [{
   path: 'init',
@@ -38,6 +40,7 @@ const routes: Routes = [{
     BrowserModule,
     RouterModule.forRoot(routes),
     StoreModule.forRoot({ [featureName]: managerReducer }),
+    EffectsModule.forRoot([ManagerEffects])
   ],
   providers: [],
   bootstrap: [AppComponent]
