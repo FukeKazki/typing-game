@@ -11,6 +11,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { ManagerEffects } from './store/manager.effect';
 import { ButtonDirective } from './shared/directives/button.directive';
+import { KeyboardComponent } from './pages/playing-page/components/keyboard/keyboard.component';
 
 const routes: Routes = [{
   path: 'init',
@@ -36,7 +37,8 @@ const routes: Routes = [{
     PlayingComponent,
     ResultsComponent,
     InitComponent,
-    ButtonDirective
+    ButtonDirective,
+    KeyboardComponent
   ],
   imports: [
     BrowserModule,
