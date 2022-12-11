@@ -10,6 +10,7 @@ import { featureName, managerReducer } from './store/manager.reducer';
 import { RouterModule, Routes } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { ManagerEffects } from './store/manager.effect';
+import { ButtonDirective } from './shared/directives/button.directive';
 
 const routes: Routes = [{
   path: 'init',
@@ -34,7 +35,8 @@ const routes: Routes = [{
     AppComponent,
     PlayingComponent,
     ResultsComponent,
-    InitComponent
+    InitComponent,
+    ButtonDirective
   ],
   imports: [
     BrowserModule,

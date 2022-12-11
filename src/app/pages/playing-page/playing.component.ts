@@ -18,8 +18,6 @@ export class PlayingComponent implements OnInit {
   inputedHiragana: string = ''
   notInputedHiragana: string = ''
 
-  count$ = this.managerService.count$
-  score$ = this.managerService.score$
   miss$ = this.managerService.miss$
 
   // 残り時間
