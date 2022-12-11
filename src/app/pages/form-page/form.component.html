@@ -1,0 +1,18 @@
+<p>問題を作成する</p>
+<form [formGroup]="problemForm" (ngSubmit)="onSubmit()">
+  <label for="title">タイトル</label>
+  <input id="title" type="text" formControlName="title">
+  <div formArrayName="problems">
+    <h2>problems</h2>
+    <div *ngFor="let problems of problems.controls; let i=index">
+      <div [formGroupName]="i">
+        <label for="hiragana-{{ i }}">ひらがな:</label>
+        <input id="hiragana-{{ i }}" type="text" formControlName="hiragana">
+        <label for="kanji-{{ i }}">かんじ:</label>
+        <input id="kanji-{{ i }}" type="text" formControlName="kanji">
+      </div>
+    </div>
+    <button type="button" (click)="addProblem()">+ 問題追加</button>
+  </div>
+  <button type="submit">送信</button>
+</form>

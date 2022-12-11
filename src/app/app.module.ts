@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { PlayingComponent } from './pages/playing-page/playing.component';
 import { ResultsComponent } from './pages/results-page/results.component';
@@ -12,6 +12,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { ManagerEffects } from './store/manager.effect';
 import { ButtonDirective } from './shared/directives/button.directive';
 import { KeyboardComponent } from './pages/playing-page/components/keyboard/keyboard.component';
+import { FormComponent } from './pages/form-page/form.component';
 
 const routes: Routes = [{
   path: 'init',
@@ -22,6 +23,9 @@ const routes: Routes = [{
 }, {
   path: 'results',
   component: ResultsComponent
+}, {
+  path: 'form',
+  component: FormComponent
 }, {
   path: '',
   pathMatch: 'full',
@@ -37,6 +41,7 @@ const routes: Routes = [{
     PlayingComponent,
     ResultsComponent,
     InitComponent,
+    FormComponent,
     ButtonDirective,
     KeyboardComponent
   ],
@@ -46,7 +51,9 @@ const routes: Routes = [{
       useHash: true // ゲームだしSEOいらないのでHashモードでいい気がした
     }),
     StoreModule.forRoot({ [featureName]: managerReducer }),
-    EffectsModule.forRoot([ManagerEffects])
+    EffectsModule.forRoot([ManagerEffects]),
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
