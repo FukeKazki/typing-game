@@ -1,0 +1,17 @@
+<p>signin works!</p>
+
+<form #form="ngForm" (ngSubmit)="signIn(form)">
+  <input ngModel
+    type="email"
+    name="email"
+    class="form-control"
+    placeholder="メールアドレスを入力">
+  <input
+    ngModel
+    type="password"
+    name="password"
+    class="form-control"
+    placeholder="パスワードを入力"
+  />
+  <button type="submit" class="btn btn-primary">サインイン</button>
+</form>

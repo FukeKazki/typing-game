@@ -1,15 +1,27 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
+import { User } from "@angular/fire/auth";
 import { FormArray, FormBuilder } from "@angular/forms";
-
+import { AuthService } from "src/app/services/auth.service";
+import { PostService } from "src/app/services/post.service";
+import { UserService } from "src/app/services/user.service";
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss']
 })
-export class FormComponent {
+export class FormComponent implements OnInit {
+  user: User | null = null
+
   constructor(
-    private fb: FormBuilder
+    private readonly auth: AuthService,
+    private fb: FormBuilder,
+    private postService: PostService,
+    private userService: UserService
   ) { }
+
+  ngOnInit(): void {
+    this.auth.getAuthState().subscribe(user => this.user = user)
+  }
 
   problemForm = this.fb.group({
     title: [''],
@@ -34,7 +46,13 @@ export class FormComponent {
     )
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     console.log(this.problemForm.value)
+    if (!this.user) return;
+    const user = await this.userService.getAccount(this.user.uid)
+    this.postService.post({
+      ...this.problemForm.value,
+      user: user?.ref
+    })
   }
 }

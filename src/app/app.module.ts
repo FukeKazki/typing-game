@@ -13,6 +13,17 @@ import { ManagerEffects } from './store/manager.effect';
 import { ButtonDirective } from './shared/directives/button.directive';
 import { KeyboardComponent } from './pages/playing-page/components/keyboard/keyboard.component';
 import { FormComponent } from './pages/form-page/form.component';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { environment } from 'src/environment';
+import { LoginComponent } from './pages/login-page/login.component';
+import { SigninComponent } from './pages/signin-page/signin.component';
+import { canActivate, redirectUnauthorizedTo, redirectLoggedInTo } from '@angular/fire/auth-guard';
+import { AdminComponent } from './pages/admin-page/admin.component';
+
+const redirectUnAuthorizedToLogin = () => redirectUnauthorizedTo('/login')
+const redirectLoggedInToAdmin = () => redirectLoggedInTo('/admin')
 
 const routes: Routes = [{
   path: 'init',
@@ -25,7 +36,24 @@ const routes: Routes = [{
   component: ResultsComponent
 }, {
   path: 'form',
-  component: FormComponent
+  component: FormComponent,
+  // 認証してない場合はログインページにリダイレクトするガード
+  ...canActivate(redirectUnAuthorizedToLogin),
+}, {
+  path: 'login',
+  component: LoginComponent,
+  // 認証済みの場合はアドミンページにリダイレクトするガード
+  ...canActivate(redirectLoggedInToAdmin)
+}, {
+  path: 'signin',
+  component: SigninComponent,
+  // 認証済みの場合はアドミンページにリダイレクトするガード
+  ...canActivate(redirectLoggedInToAdmin)
+}, {
+  path: 'admin',
+  component: AdminComponent,
+  // 認証してない場合はログインページにリダイレクトするガード
+  ...canActivate(redirectUnAuthorizedToLogin),
 }, {
   path: '',
   pathMatch: 'full',
@@ -43,7 +71,10 @@ const routes: Routes = [{
     InitComponent,
     FormComponent,
     ButtonDirective,
-    KeyboardComponent
+    KeyboardComponent,
+    LoginComponent,
+    SigninComponent,
+    AdminComponent
   ],
   imports: [
     BrowserModule,
@@ -52,8 +83,11 @@ const routes: Routes = [{
     }),
     StoreModule.forRoot({ [featureName]: managerReducer }),
     EffectsModule.forRoot([ManagerEffects]),
+    ReactiveFormsModule,
     FormsModule,
-    ReactiveFormsModule
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
   ],
   providers: [],
   bootstrap: [AppComponent]
