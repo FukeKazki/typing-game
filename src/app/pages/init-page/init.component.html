@@ -1,1 +1,9 @@
-<a routerLink="/playing" appButton>ゲームスタート</a>
+<button (click)="start()" appButton>ゲームスタート</button>
+
+<p>問題を選択してね</p>
+<ul>
+  <li *ngFor="let game of games; let i = index" (click)="select(game['problems'], i)" class="item" [class.selected]="i === selectedIndex">
+    <p>{{ game['title'] }}</p>
+    <p>作成者 {{ game['user'].email }}</p>
+  </li>
+</ul>

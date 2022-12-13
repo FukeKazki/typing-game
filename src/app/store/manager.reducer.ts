@@ -1,5 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
-import { calcScore, end, miss, next, start, success } from "./manager.actions";
+import { Problem } from "../services/manager.service";
+import { calcScore, end, miss, next, setProblem, start, success } from "./manager.actions";
 
 export const featureName = 'manager'
 
@@ -9,6 +10,7 @@ export interface State {
   miss: number;
   success: number;
   validity: number; // 正答率
+  problems: Problem[];
 }
 
 export const initialState: State = {
@@ -17,6 +19,7 @@ export const initialState: State = {
   miss: 0,
   success: 0,
   validity: 0,
+  problems: []
 }
 
 export const managerReducer = createReducer(
@@ -47,5 +50,9 @@ export const managerReducer = createReducer(
     ...state,
     score: state.success,
     validity: (state.success / (state.success + state.miss)) * 100
+  })),
+  on(setProblem, (state, {payload}) => ({
+    ...state,
+    problems: payload.problems
   }))
 )

@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HiraganaParser } from 'hiragana-parser'
-import { interval, map, take } from 'rxjs';
+import { catchError, interval, map, take } from 'rxjs';
 import { ManagerService } from '../../services/manager.service';
 
 @Component({
@@ -28,9 +28,7 @@ export class PlayingComponent implements OnInit {
     private readonly router: Router
   ) { }
 
-  get nextProblem() {
-    return this.managerService.getNextProblem()
-  }
+  // nextProblem$ = this.managerService.getNextProblem
 
 
   ngOnInit(): void {
@@ -42,11 +40,14 @@ export class PlayingComponent implements OnInit {
    */
   private start(): void {
     this.managerService.start()
-    const { kanji, hiragana } = this.managerService.getProblem()
-    this.kanji = kanji
-    this.parser = new HiraganaParser({ hiraganas: hiragana })
-    this.notInputed = this.parser.notInputedRoma
-    this.notInputedHiragana = this.parser.notInputedHiragana
+    this.managerService.getProblem().pipe(
+      map(problem => {
+        this.kanji = problem.kanji
+        this.parser = new HiraganaParser({ hiraganas: problem.hiragana })
+        this.notInputed = this.parser.notInputedRoma
+        this.notInputedHiragana = this.parser.notInputedHiragana
+      })
+    ).subscribe()
 
     this.startTimer()
   }
@@ -98,11 +99,19 @@ export class PlayingComponent implements OnInit {
    */
   private complete(): void {
     this.managerService.next()
-    const { kanji, hiragana } = this.managerService.getProblem()
-    this.kanji = kanji
-    this.parser = new HiraganaParser({ hiraganas: hiragana })
-    this.notInputed = this.parser.notInputedRoma
-    this.notInputedHiragana = this.parser.notInputedHiragana
+    this.managerService.getProblem().pipe(
+      map(problem => {
+        this.kanji = problem.kanji
+        this.parser = new HiraganaParser({ hiraganas: problem.hiragana })
+        this.notInputed = this.parser.notInputedRoma
+        this.notInputedHiragana = this.parser.notInputedHiragana
+      })
+    ).subscribe({
+      error: (err) => {
+        console.log(err)
+        this.finished()
+      }
+    })
 
     this.inputed = ''
     this.inputedHiragana = ''

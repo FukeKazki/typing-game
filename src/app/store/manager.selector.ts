@@ -27,3 +27,8 @@ export const selectVaridity = createSelector(
   feature,
   (state) => state.validity
 )
+
+export const selectProblem = createSelector(
+  feature,
+  (state) => state.problems
+)

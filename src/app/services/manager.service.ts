@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { State } from '../store/manager.reducer';
-import { selectCount, selectMiss, selectScore, selectSuccess, selectVaridity } from '../store/manager.selector';
+import { selectCount, selectMiss, selectProblem, selectScore, selectSuccess, selectVaridity } from '../store/manager.selector';
 import * as ManagerActions from '../store/manager.actions'
 import data from '../data/problems.json'
 import { shuffle } from '../util';
+import { map, skip, take } from 'rxjs';
 
 export type Problem = {
   kanji: string;
@@ -15,7 +16,6 @@ export type Problem = {
 })
 export class ManagerService {
 
-  problems: Problem[] = []
   iterator = 0
 
   constructor(
@@ -27,9 +27,10 @@ export class ManagerService {
   miss$ = this.manager.pipe(select(selectMiss))
   success$ = this.manager.pipe(select(selectSuccess))
   varidity$ = this.manager.pipe(select(selectVaridity))
+  problems$ = this.manager.pipe(select(selectProblem))
 
-  start() {
-    this.problems = shuffle(data.problems)
+  async start() {
+    this.iterator = 0
     this.manager.dispatch(ManagerActions.start())
   }
 
@@ -52,10 +53,18 @@ export class ManagerService {
   }
 
   getProblem() {
-    return this.problems[this.iterator]
+    return this.problems$.pipe(map(v => v[this.iterator]))
+    // return this.problems[this.iterator]
   }
 
   getNextProblem() {
-    return this.problems[this.iterator + 1]
+    return this.problems$.pipe(skip(1), take(1), map(v => v[this.iterator]))
+    // return this.problems[this.iterator + 1]
+  }
+
+  setProblems(problems: Problem[]) {
+    this.manager.dispatch(ManagerActions.setProblem({
+      problems: problems
+    }))
   }
 }

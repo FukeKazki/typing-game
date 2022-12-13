@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { addDoc, collection, Firestore, getDocs, query } from '@angular/fire/firestore';
+import { addDoc, collection, Firestore, getDoc, getDocs, query } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +37,20 @@ export class PostService {
       return null
     }
     return snapshot.docs.map(doc => doc.data())
+  }
+
+  async getProblems() {
+    const posts = (await this.getPosts()) ?? []
+    return Promise.all(posts.map(async (post) => {
+      if (post['user']) {
+        const user = await getDoc(post['user'])
+        return {
+          ...post,
+          user: user.data()
+        }
+      }
+      return post
+    }))
   }
 
   // 特定のユーザーの投稿一覧を取得する
