@@ -47,12 +47,12 @@ export class FormComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    console.log(this.problemForm.value)
     if (!this.user) return;
     const user = await this.userService.getAccount(this.user.uid)
     this.postService.post({
       ...this.problemForm.value,
       user: user?.ref
     })
+    window.alert('投稿しました！')
   }
 }
